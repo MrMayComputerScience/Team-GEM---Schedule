@@ -21,9 +21,12 @@ import javafx.print.PrinterJob;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main extends Application
 {
+    private ArrayList<String> names;
+    private int column;
     private BorderPane bp;
     @Override
     public void start(Stage primaryStage) throws Exception
@@ -61,16 +64,25 @@ public class Main extends Application
     }
     public void readFile()
     {
-        try (BufferedReader reader = new BufferedReader(new FileReader(new File("todo.txt")))) {
+
+        int column = 0;
+        ArrayList<String> names = new ArrayList<String>();
+        Scanner sc = new Scanner(System.in);
+        System.out.print("enter file name.");
+        try (BufferedReader reader = new BufferedReader(new FileReader(new File(sc.next())))) {
 
             String line;
             while ((line = reader.readLine()) != null)
             {
-
+                names.add(line);
+                System.out.println(line);
+                column++;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        this.names = names;
+        this.column = column;
     }
     public void writeFile()
     {
