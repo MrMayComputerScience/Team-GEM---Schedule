@@ -17,10 +17,13 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main extends Application
 {
 
+    private ArrayList<String> names;
+    private int column;
     private List<CheckBox> CheckBoxs;
     private Button btAddUser = new Button("Save");
     @Override
@@ -35,12 +38,10 @@ public class Main extends Application
 
 
         primaryStage.setTitle("GEM's To-Do List");
-
-        //root.getStylesheets().add(Main.class.getResource("Decor.css").toExternalForm());
-
+        primaryStage.setScene(new Scene(root, 300, 275));
         primaryStage.show();
 
-        //Controller controller = loader.getController();
+        Controller controller = loader.getController();
         BorderPane bpane = new BorderPane();
 
         VBox vbox = new VBox();
@@ -54,21 +55,6 @@ public class Main extends Application
         Button up = new Button("Move Up");
         Button down = new Button("Move Down");
         hbox.getChildren().addAll(add,field,edit,remove,check,up,down,btAddUser);
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(new File("todo.txt")))) {
-
-            String line;
-            while ((line = reader.readLine()) != null)
-            {
-                CheckBox cb1 = new CheckBox(line);
-                CheckBoxs.add(cb1);
-                vbox.getChildren().add(cb1);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
     }
     public void fileChooser()
     {
@@ -84,16 +70,25 @@ public class Main extends Application
     }
     public void readFile()
     {
-        try (BufferedReader reader = new BufferedReader(new FileReader(new File("todo.txt")))) {
+
+        int column = 0;
+        ArrayList<String> names = new ArrayList<String>();
+        Scanner sc = new Scanner(System.in);
+        System.out.print("enter file name.");
+        try (BufferedReader reader = new BufferedReader(new FileReader(new File(sc.next())))) {
 
             String line;
             while ((line = reader.readLine()) != null)
             {
-
+                names.add(line);
+                System.out.println(line);
+                column++;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        this.names = names;
+        this.column = column;
     }
     public void writeFile()
     {
