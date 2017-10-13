@@ -14,6 +14,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,11 +71,34 @@ public class Main extends Application
             e.printStackTrace();
         }
 
+        File chosen = fileChooser();
 
     }
-    public void fileChooser()
+    public File fileChooser()
     {
+        //Creates the JFileChooser and bases its selection on the OS directory
+        JFileChooser fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 
+        //Limits the JFileChooser to select only files and only one file at a time
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fc.setMultiSelectionEnabled(false);
+
+        //Limits the JFileChooser to select only text files
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
+        fc.setAcceptAllFileFilterUsed(false);
+        fc.addChoosableFileFilter(filter);
+
+        //Gets the hash int for the selected file
+        int returnValue = fc.showOpenDialog(null);
+
+        //If the hash means the File is accepted, store the File
+        if(returnValue == JFileChooser.APPROVE_OPTION)
+        {
+            File chosen = fc.getSelectedFile();
+            return chosen;
+        }
+
+        return null;
     }
     public void print()
     {
