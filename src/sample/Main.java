@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -35,10 +36,10 @@ public class Main extends Application
         bp = new BorderPane();
         root.getChildren().add(bp);
         primaryStage.setScene(new Scene(root, 300, 275));
-        //print(new Circle(100));
-        Printer x = Printer.getDefaultPrinter();
-        choosePrinter(x);
+
         primaryStage.show();
+        createGrid();
+
     }
     public void fileChooser()
     {
@@ -49,12 +50,16 @@ public class Main extends Application
         Printer y = Printer.getDefaultPrinter();
         choosePrinter(y);
         PrinterJob job = PrinterJob.createPrinterJob();
-        if (job != null) {
-            boolean success = job.printPage(x);
-            if (success) {
-                job.endJob();
+        boolean success1 = job.showPageSetupDialog(new Stage());
+        if(success1) {
+            if (job != null) {
+                boolean success = job.printPage(x);
+                if (success) {
+                    job.endJob();
+                }
             }
         }
+
     }
     public void choosePrinter(Printer print)
     {
@@ -107,6 +112,22 @@ public class Main extends Application
     }
     public void createGrid()
     {
+        ArrayList<String> nam = new ArrayList<String>();
+        nam.add("Gavin");
+        nam.add("Kevin");
+        nam.add("evan");
+        Stage grid = new Stage();
+        GridPane gb = new GridPane();
+        gb.setHgap(3);
+        gb.setVgap(3);
+        gb.add(new Text("test"),0,0);
+        grid.setScene(new Scene(gb, 300, 275));
+        for(int x =0;x<nam.size();x++)
+        {
+            gb.add(new Text(nam.get(x)),0,x+1);
+        }
+        grid.show();
+        
 
     }
     public static void main(String[] args)
