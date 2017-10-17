@@ -23,9 +23,13 @@ import java.util.List;
 
 public class Main extends Application
 {
+    private File students;
+    private File header;
+    private File columns;
 
     private List<CheckBox> CheckBoxs;
     private Button btAddUser = new Button("Save");
+
     @Override
     public void start(Stage primaryStage) throws Exception
     {
@@ -71,7 +75,9 @@ public class Main extends Application
             e.printStackTrace();
         }
 
-        File chosen = fileChooser();
+        students = fileChooser();
+        header = fileChooser();
+        columns = fileChooser();
 
     }
     public File fileChooser()
@@ -100,6 +106,27 @@ public class Main extends Application
 
         return null;
     }
+    public String pathChooser()
+    {
+        //Creates the JFileChooser and bases its selection on the OS directory
+        JFileChooser dc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+
+        //Limits the JFileChooser to select only directories and only one directory at a time
+        dc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        dc.setMultiSelectionEnabled(false);
+
+        //Gets the hash int for the selected directory
+        int returnValue = dc.showOpenDialog(null);
+
+        //If the hash means the directory is accepted, return the path to the directory
+        if(returnValue == JFileChooser.APPROVE_OPTION)
+        {
+            String chosen = dc.getSelectedFile().getAbsolutePath();
+            return chosen;
+        }
+
+        return null;
+    }
     public void print()
     {
 
@@ -108,7 +135,7 @@ public class Main extends Application
     {
 
     }
-    public void readFile()
+    public List readFile(File toRead)
     {
         try (BufferedReader reader = new BufferedReader(new FileReader(new File("todo.txt")))) {
 
@@ -120,6 +147,8 @@ public class Main extends Application
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return new ArrayList<String>();
     }
     public void writeFile()
     {
@@ -127,7 +156,25 @@ public class Main extends Application
     }
     public void saveFile()
     {
+        try
+        {
+            //If the file exists, the file is overwritten
+            //If the file doesn't exist, the file is created
+            File toSave = new File(pathChooser());
+            if(!toSave.exists()) toSave.createNewFile();
 
+            //Initializes the classes that will write to the file
+            FileWriter fr = new FileWriter(toSave);
+            BufferedWriter br = new BufferedWriter(fr);
+
+            //Closes the streams
+            br.close();
+            fr.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
     public void createGrid()
     {
