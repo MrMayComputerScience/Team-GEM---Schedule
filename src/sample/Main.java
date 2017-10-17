@@ -26,8 +26,8 @@ import java.util.regex.*;
 
 public class Main extends Application
 {
-    private ArrayList<String> names =new ArrayList<String>();
-
+    private ArrayList<String> names =new ArrayList<String>(); //list of all the names
+    private ArrayList<String> temp = new ArrayList<String>(); //list of all the columns
     private BorderPane bp;
     private String header;
     private int columns =0;
@@ -107,7 +107,6 @@ public class Main extends Application
         Scanner sc = new Scanner(System.in);
         System.out.print("enter file path.");
         String[] lines;
-        ArrayList<String> temp = new ArrayList<String>();
         try (BufferedReader reader = new BufferedReader(new FileReader(new File(sc.next()))))
         {
 
