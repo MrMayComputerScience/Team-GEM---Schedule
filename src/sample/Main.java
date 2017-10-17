@@ -27,9 +27,11 @@ import java.util.regex.*;
 public class Main extends Application
 {
     private ArrayList<String> names =new ArrayList<String>();
-    private int column;
+
     private BorderPane bp;
     private String header;
+    private int columns =0;
+    int rows = 0;
     @Override
     public void start(Stage primaryStage) throws Exception
     {
@@ -86,7 +88,7 @@ public class Main extends Application
                     if(temp.size()>0 && (temp.get(0)!=null && temp.get(1)!=null))
                     names.add(lines[0] + " " + lines[1]);
                     //System.out.println(line);
-                    column++;
+                    rows++;
             }
             for(int i = 0; i<names.size();i++)
             {
@@ -116,6 +118,7 @@ public class Main extends Application
                 for(int i = 0;i<lines.length;i++)
                 {
                     temp.add(lines[i]);
+                    columns++;
                 }
 
             }
