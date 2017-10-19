@@ -26,10 +26,12 @@ import java.util.regex.*;
 
 public class Main extends Application
 {
+
     private ArrayList<String> names =new ArrayList<String>(); //list of all the names
     private ArrayList<String> temp = new ArrayList<String>(); //list of all the columns
+    private ArrayList<String> sorted = new ArrayList<String>(); //list of names sorted
     private BorderPane bp;
-    private String header;
+    private String header;// the header
     private int columns =0;
     int rows = 0;
     @Override
@@ -44,7 +46,8 @@ public class Main extends Application
         primaryStage.setScene(new Scene(root, 300, 275));
         //readNames();
         //readHeader();
-        readColumns();
+        //readColumns();
+        reorganize();
         primaryStage.show();
     }
     public void fileChooser()
@@ -68,7 +71,7 @@ public class Main extends Application
 
         return Printer.getDefaultPrinter();
     }
-    public void readNames()
+    public void readNames()//modify to use explorer(also read the organize method just in case)
     {
         Scanner sc = new Scanner(System.in);
         System.out.print("enter file path.");
@@ -86,13 +89,13 @@ public class Main extends Application
                         temp.add(lines[i]);
                     }
                     if(temp.size()>0 && (temp.get(0)!=null && temp.get(1)!=null))
-                    names.add(lines[0] + " " + lines[1]);
+                    names.add(lines[1] + " " + lines[0]);
                     //System.out.println(line);
                     rows++;
             }
             for(int i = 0; i<names.size();i++)
             {
-                System.out.println(names.get(i));
+                //System.out.println(names.get(i));
             }
         }
         catch (IOException e)
@@ -102,7 +105,7 @@ public class Main extends Application
         }
     }
 
-    public void readColumns()
+    public void readColumns()//modify to use explorer
     {
         Scanner sc = new Scanner(System.in);
         System.out.print("enter file path.");
@@ -133,7 +136,7 @@ public class Main extends Application
         }
     }
 
-    public void readHeader()
+    public void readHeader()//modify to use explorer
     {
         Scanner sc = new Scanner(System.in);
         System.out.print("enter file path.");
@@ -152,6 +155,19 @@ public class Main extends Application
             e.printStackTrace();
         }
     }
+    public void reorganize()
+    {
+        readNames();
+        java.util.Collections.sort(names);
+        for(int i = 0;i<names.size();i++)
+        {
+            String[] small = names.get(i).split(" ");
+            sorted.add(small[1] + " " + small[0]);
+            System.out.println(sorted.get(i));
+        }
+    }
+
+
     public void writeFile()
     {
 
