@@ -34,7 +34,7 @@ public class Main extends Application
     private ArrayList<String> col = new ArrayList<String>(); //list of all the columns
     private ArrayList<String> sorted = new ArrayList<String>(); //list of names sorted
     private BorderPane bp;
-    private String header;// the header
+    private ArrayList<String> header = new ArrayList<String>();// the header
     private int columns = 0;
     int rows = 0;
 
@@ -186,7 +186,7 @@ public class Main extends Application
                 if (line != null && !line.equals(""))
                 {
                     //Set the header as that line and break
-                    header = line;
+                    header.add(line);
                     System.out.println(header);
 
                     break;
@@ -197,7 +197,7 @@ public class Main extends Application
             //Backup if the file is empty
             if(line == null)
             {
-                header = "Header";
+                header.add("Header");
             }
 
         }
@@ -247,8 +247,11 @@ public class Main extends Application
             BufferedWriter br = new BufferedWriter(fr);
 
             //Writes the header
-            br.write(header);
-            br.newLine();
+            for(int h = 0; h < header.size(); h++)
+            {
+                br.write(header.get(h));
+                br.newLine();
+            }
             br.write("--------------------");
             br.newLine();
             br.write("                    ");
