@@ -2,6 +2,7 @@ package sample;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.print.Printer;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -10,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.print.PrinterJob;
@@ -117,24 +119,30 @@ public class Main extends Application
         StackPane sp = new StackPane();
         sp.setStyle("-fx-background-color: #FFFFFF");
         GridPane gb = new GridPane();
-        GridPane gridpane = new GridPane();
+        gb.setStyle("-fx-background-color: #FFFFFF");
+
         for (int i = 0; i < nam.size(); i++) {
-            ColumnConstraints column = new ColumnConstraints(100);
-            gridpane.getColumnConstraints().add(column);
+            ColumnConstraints column = new ColumnConstraints(50);
+            gb.getColumnConstraints().add(column);
             System.out.println(gb.getWidth());
             System.out.println(gb.getHeight());
         }
+
         gb.setPrefSize(100,100);
-        //gb.set
-        //sp.getChildren().add(gb);
+
+        sp.getChildren().add(gb);
+        sp.setMaxSize(gb.getWidth(),gb.getHeight());
 
 
-        /*
         gb.add(new Text("test"),0,0);
 
         gb.add(new Pane(),0,1);
+        RowConstraints row = new RowConstraints(25);
+        gb.getRowConstraints().add(row);
+        gb.getRowConstraints().add(row);
         for(int x = 0;x<nam.size();x++)
         {
+            gb.getRowConstraints().add(row);
             Pane pan = new Pane();
             Button but = new Button(nam.get(x));
 
@@ -145,6 +153,17 @@ public class Main extends Application
 
 
         }
+        for(int i = 0; i <gb.getRowConstraints().size(); i++)
+        {
+            Pane pan = new Pane();
+            pan.resize(50,100);
+            //but.setStyle("-fx-background-color: #000000");
+            pan.setStyle("-fx-background-color: #FFFFFF");
+            if(i==0)
+                pan.getChildren().add(new Button("test"));
+            gb.add(pan,i,0);
+        }
+
         for(int x =0;x<nam.size();x++)
         {
             Pane pan = new Pane();
@@ -154,22 +173,28 @@ public class Main extends Application
             Button but = new Button(nam.get(x));
             pan.getChildren().add(but);
 
+
+
             gb.add(pan,0,x+2);
             for(int z = 1;z<nam.size()+2;z++)
             {
                 gb.add(new Pane(),z,x+2);
             }
         }
-
+        gb.setPadding(new Insets(1));
         gb.setStyle("-fx-background-color: #000000;");
         for(Node n: gb.getChildren())
         {
             n.setStyle("-fx-background-color: #FFFFFF;");
         }
-        */
+
         gb.setVgap(1);
         gb.setHgap(1);
-        grid.setScene(new Scene(gb, gb.getWidth(), gb.getHeight()));
+
+        gb.setMaxHeight(gb.getRowConstraints().size()*25);
+        gb.setMaxWidth(gb.getColumnConstraints().size()*50+50);
+        grid.setScene(new Scene(sp, gb.getColumnConstraints().size()*50+50, gb.getRowConstraints().size()*25));
+
         grid.show();
 
 
