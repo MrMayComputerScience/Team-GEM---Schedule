@@ -23,6 +23,7 @@ import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main extends Application
 {
@@ -240,7 +241,53 @@ public class Main extends Application
     }
     public void saveFile()
     {
+        try
+        {
+            //Asks the user for the desired name for the file
+            System.out.println("Type in the name that you want for your new file."); //have gui display this
+            Scanner input = new Scanner(System.in);
+            String filename = input.next();
 
+            //Notifies the user what the FileChooser is for
+            System.out.println("Choose the directory to store the file."); //have gui display this
+
+            //If the file exists, the file is overwritten
+            //If the file doesn't exist, the file is created
+            File toSave = new File(fileChooser());
+            if(!toSave.exists()) toSave.createNewFile();
+
+            //Initializes the classes that will write to the file
+            FileWriter fr = new FileWriter(toSave + "/" + filename);
+            BufferedWriter br = new BufferedWriter(fr);
+
+            //Writes the header
+            br.write(header);
+            br.newLine();
+            br.write("--------------------");
+            br.newLine();
+            br.write("                    ");
+
+            //Writes the columns
+            for(int c = 0; c < columns; c++)
+            {
+                br.write("  " + col.get(c));
+            }
+
+            //Writes the names (or rows)
+            for(int n = 0; n < rows; n++)
+            {
+                br.newLine();
+                br.write(sorted.get(n));
+            }
+
+            //Closes the streams
+            br.close();
+            fr.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
     public void createGrid()
     {
