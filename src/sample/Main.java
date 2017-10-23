@@ -1,4 +1,5 @@
 package sample;
+import com.sun.xml.internal.ws.server.sei.MessageFiller;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -13,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.print.PrinterJob;
 
@@ -35,20 +37,54 @@ public class Main extends Application
     private String header;// the header
     private int columns = 0;
     int rows = 0;
+    private GridPane gb1;
     @Override
     public void start(Stage primaryStage) throws Exception
     {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(Main.class.getResource("sample.fxml"));
-        StackPane root = new StackPane();
-        primaryStage.setTitle("GEM's To-Do List");
-        bp = new BorderPane();
-        root.getChildren().add(bp);
-        primaryStage.setScene(new Scene(root, 300, 275));
+        Stage stg = new Stage();
+         BorderPane Bp = new BorderPane();
+         VBox hbox = new VBox();
+         hbox.getChildren().add(new Text("Header: "));
+         hbox.getChildren().add(new Text("Names: "));
+         hbox.getChildren().add(new Text("Colum: "));
+         Bp.setLeft(hbox);
+         VBox hBox = new VBox();
+         Button buttH = new Button("Choose Header");
+         hBox.getChildren().add(buttH);
+        Button buttN = new Button("Choose Names");
+        hBox.getChildren().add(buttN);
+        Button buttC = new Button("Choose Columns");
+        hBox.getChildren().add(buttC);
+        buttH.setOnAction((ActionEvent e) -> {
+            readHeader();
+            buttH.setText("File Chosen");
+        });
+        buttC.setOnAction((ActionEvent e) -> {
+            readColumns();
+            buttC.setText("File Chosen");
+        });
+        buttN.setOnAction((ActionEvent e) -> {
+            readNames();
+            buttN.setText("File Chosen");
+        });
+        Button buttG = new Button("Create Grid");
+        buttG.setOnAction((ActionEvent e) -> {
+            if(!(names == null)&&!(col == null)&&!(header == null))
+                createGrid();
 
-        primaryStage.show();
-        createGrid();
+        });
+        hbox.getChildren().add(buttG);
+        Button print = new Button("Print Grid");
+        hBox.getChildren().add(print);
+        print.setOnAction((ActionEvent e) -> {
+            if(!(gb1==null))
+             print(gb1);
 
+        });
+        Bp.setRight(hBox);
+        Bp.setTop(new Text("Schedule Maker"));
+        stg.setScene(new Scene(Bp,200,200));
+        stg.show();
     }
     public String fileChooser()
     {
@@ -80,7 +116,9 @@ public class Main extends Application
     {
 
         Printer y = Printer.getDefaultPrinter();
-        choosePrinter(y);
+        Boolean test = false;
+        while(test)
+            choosePrinter(y,test);
         PrinterJob job = PrinterJob.createPrinterJob(y);
         boolean success1 = job.showPageSetupDialog(new Stage());
         if(success1) {
@@ -93,7 +131,7 @@ public class Main extends Application
         }
 
     }
-    public void choosePrinter(Printer print)
+    public void choosePrinter(Printer print,boolean y)
     {
         ChoiceBox<Printer> t = new ChoiceBox();
 
@@ -118,6 +156,7 @@ public class Main extends Application
         });
         if(butt.isPressed()) {
             print = t.getValue();
+            y = true;
         }
 
     }
@@ -291,14 +330,13 @@ public class Main extends Application
     }
     public void createGrid()
     {
-        ArrayList<String> nam = new ArrayList<String>();
-        nam.add("Gavin");
-        nam.add("Kevin");
-        nam.add("evan");
+        ArrayList<String> nam = names;
+        ArrayList<String> cols = col;
         Stage grid = new Stage();
         StackPane sp = new StackPane();
         sp.setStyle("-fx-background-color: #FFFFFF");
         GridPane gb = new GridPane();
+
         gb.setStyle("-fx-background-color: #FFFFFF");
 
         for (int i = 0; i < nam.size(); i++) {
@@ -314,7 +352,7 @@ public class Main extends Application
         sp.setMaxSize(gb.getWidth(),gb.getHeight());
 
 
-        gb.add(new Text("test"),0,0);
+        //gb.add(new Text("test"),0,0);
 
         gb.add(new Pane(),0,1);
         RowConstraints row = new RowConstraints(25);
@@ -340,23 +378,23 @@ public class Main extends Application
             //but.setStyle("-fx-background-color: #000000");
             pan.setStyle("-fx-background-color: #FFFFFF");
             if(i==0)
-                pan.getChildren().add(new Button("test"));
+                pan.getChildren().add(new Button(header));
             gb.add(pan,i,0);
         }
 
-        for(int x =0;x<nam.size();x++)
+        for(int x =0;x<col.size();x++)
         {
             Pane pan = new Pane();
             pan.resize(50,100);
             //but.setStyle("-fx-background-color: #000000");
             pan.setStyle("-fx-background-color: #FFFFFF");
-            Button but = new Button(nam.get(x));
+            Button but = new Button(col.get(x));
             pan.getChildren().add(but);
 
 
 
             gb.add(pan,0,x+2);
-            for(int z = 1;z<nam.size()+2;z++)
+            for(int z = 1;z<col.size()+2;z++)
             {
                 gb.add(new Pane(),z,x+2);
             }
@@ -376,7 +414,7 @@ public class Main extends Application
         grid.setScene(new Scene(sp, gb.getColumnConstraints().size()*50+50, gb.getRowConstraints().size()*25));
 
         grid.show();
-
+        gb1 = gb;
 
     }
     public static void main(String[] args)
