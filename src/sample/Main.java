@@ -120,22 +120,123 @@ public class Main extends Application
         }
 
     }
-    public void readFile()
+    public void readNames()//modify to use explorer(also read the organize method just in case)
     {
-        try (BufferedReader reader = new BufferedReader(new FileReader(new File("todo.txt")))) {
+        String[] lines;
+        ArrayList<String> temp = new ArrayList<String>();
+
+        System.out.println("Choose the file that contains the row list you want."); //have gui display this
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileChooser())))
+        {
 
             String line;
             while ((line = reader.readLine()) != null)
             {
+                lines = line.split(" ");
 
+                for(int i = 0;i<lines.length;i++)
+                {
+                    temp.add(lines[i]);
+                }
+
+                if(temp.size()>0 && (temp.get(0)!=null && temp.get(1)!=null))
+                {
+                    names.add(lines[1] + " " + lines[0]);
+                }
+                //System.out.println(line);
+                rows++;
             }
-        } catch (IOException e) {
+
+        }
+        catch (IOException e)
+        {
+            System.out.println("Invalid file path.Please try again.");
             e.printStackTrace();
         }
     }
-    public void writeFile()
-    {
 
+    public void readColumns()//modify to use explorer
+    {
+        String[] lines;
+
+        System.out.println("Choose the file that contains the column list you want."); //have gui display this
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileChooser())))
+        {
+
+            String line;
+            while ((line = reader.readLine()) != null)
+            {
+                lines = line.split("\n");
+                for(int i = 0;i<lines.length;i++)
+                {
+                    col.add(lines[i]);
+                    columns++;
+                }
+
+            }
+
+        }
+        catch (IOException e)
+        {
+            System.out.println("Invalid file path.Please try again.");
+            e.printStackTrace();
+        }
+    }
+
+    public void readHeader()//modify to use explorer
+    {
+        //Notifies the user what the FileChooser is for
+        System.out.println("Choose the file that contains your custom header.");// have gui display this
+
+        //Attempts to read the file chosen by the user
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileChooser())))
+        {
+            //Initializes a String as the first line
+            String line = "";
+
+            //Loops until the line is not null nor empty
+            while(line != null && line.equals(""))
+            {
+                line = reader.readLine();
+
+                //If the line is not null nor empty
+                if (line != null && !line.equals(""))
+                {
+                    //Set the header as that line and break
+                    header = line;
+                    System.out.println(header);
+
+                    break;
+                }
+
+            }
+
+            //Backup if the file is empty
+            if(line == null)
+            {
+                header = "Header";
+            }
+
+        }
+        catch (IOException e)
+        {
+            System.out.println("Invalid file path.Please try again.");
+            e.printStackTrace();
+        }
+    }
+
+    public void reorganize()
+    {
+        readNames();
+        java.util.Collections.sort(names);
+        for(int i = 0;i<names.size();i++)
+        {
+            String[] small = names.get(i).split(" ");
+            sorted.add(small[1] + " " + small[0]);
+            System.out.println(sorted.get(i));
+        }
     }
     public void saveFile()
     {
