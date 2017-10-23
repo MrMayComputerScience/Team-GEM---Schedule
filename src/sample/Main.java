@@ -17,6 +17,9 @@ import javafx.stage.Stage;
 import javafx.print.PrinterJob;
 
 
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +42,31 @@ public class Main extends Application
         createGrid();
 
     }
-    public void fileChooser()
+    public String fileChooser()
     {
+        //Creates the JFileChooser and bases its selection on the OS directory
+        JFileChooser fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 
+        //Limits the JFileChooser to select only files and only one file at a time
+        fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        fc.setMultiSelectionEnabled(false);
+
+        //Limits the JFileChooser to select only text files
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
+        fc.setAcceptAllFileFilterUsed(false);
+        fc.addChoosableFileFilter(filter);
+
+        //Gets the hash int for the selected file
+        int returnValue = fc.showOpenDialog(null);
+
+        //If the hash means the File is accepted, store the File
+        if(returnValue == JFileChooser.APPROVE_OPTION)
+        {
+            String chosen = fc.getSelectedFile().getAbsolutePath();
+            return chosen;
+        }
+
+        return null;
     }
     public void print(Node x)
     {
