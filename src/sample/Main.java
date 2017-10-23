@@ -26,7 +26,14 @@ import java.util.List;
 
 public class Main extends Application
 {
+    
+    private ArrayList<String> names =new ArrayList<String>(); //list of all the names
+    private ArrayList<String> col = new ArrayList<String>(); //list of all the columns
+    private ArrayList<String> sorted = new ArrayList<String>(); //list of names sorted
     private BorderPane bp;
+    private String header;// the header
+    private int columns = 0;
+    int rows = 0;
     @Override
     public void start(Stage primaryStage) throws Exception
     {
