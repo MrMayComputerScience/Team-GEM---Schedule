@@ -51,8 +51,10 @@ public class Main extends Application
         reorganize();
         readHeader();
         readColumns();
+        saveFile();
         primaryStage.show();
     }
+
     public String fileChooser()
     {
         //Creates the JFileChooser and bases its selection on the OS directory
@@ -79,6 +81,7 @@ public class Main extends Application
 
         return null;
     }
+
     public void print(Node x)
     {
 
@@ -90,16 +93,21 @@ public class Main extends Application
             }
         }
     }
+
     public Printer choosePrinter()
     {
 
 
         return Printer.getDefaultPrinter();
     }
+
     public void readNames()//modify to use explorer(also read the organize method just in case)
     {
         String[] lines;
         ArrayList<String> temp = new ArrayList<String>();
+
+        System.out.println("Choose the file that contains the row list you want."); //have gui display this
+
         try (BufferedReader reader = new BufferedReader(new FileReader(fileChooser())))
         {
 
@@ -132,6 +140,9 @@ public class Main extends Application
     public void readColumns()//modify to use explorer
     {
         String[] lines;
+
+        System.out.println("Choose the file that contains the column list you want."); //have gui display this
+
         try (BufferedReader reader = new BufferedReader(new FileReader(fileChooser())))
         {
 
@@ -157,14 +168,38 @@ public class Main extends Application
 
     public void readHeader()//modify to use explorer
     {
+        //Notifies the user what the FileChooser is for
+        System.out.println("Choose the file that contains your custom header.");// have gui display this
+
+        //Attempts to read the file chosen by the user
         try (BufferedReader reader = new BufferedReader(new FileReader(fileChooser())))
         {
-            String line;
-            if((line = reader.readLine()) != null)
+            //Initializes a String as the first line
+            String line = "";
+
+            //Loops until the line is not null nor empty
+            while(line != null && line.equals(""))
             {
-                header = line;
-                System.out.println(header);
+                line = reader.readLine();
+
+                //If the line is not null nor empty
+                if (line != null && !line.equals(""))
+                {
+                    //Set the header as that line and break
+                    header = line;
+                    System.out.println(header);
+
+                    break;
+                }
+
             }
+
+            //Backup if the file is empty
+            if(line == null)
+            {
+                header = "Header";
+            }
+
         }
         catch (IOException e)
         {
@@ -172,6 +207,7 @@ public class Main extends Application
             e.printStackTrace();
         }
     }
+
     public void reorganize()
     {
         readNames();
@@ -184,28 +220,38 @@ public class Main extends Application
         }
     }
 
-
     public void writeFile()
     {
 
     }
+
     public void saveFile()
     {
         try
         {
+            //Asks the user for the desired name for the file
+            System.out.println("Type in the name that you want for your new file."); //have gui display this
+            Scanner input = new Scanner(System.in);
+            String filename = input.next();
+
+            //Notifies the user what the FileChooser is for
+            System.out.println("Choose the directory to store the file."); //have gui display this
+
             //If the file exists, the file is overwritten
             //If the file doesn't exist, the file is created
-            System.out.println("Choose the directory to store the file");
             File toSave = new File(fileChooser());
             if(!toSave.exists()) toSave.createNewFile();
 
             //Initializes the classes that will write to the file
-            FileWriter fr = new FileWriter(toSave);
+            FileWriter fr = new FileWriter(toSave + "/" + filename);
             BufferedWriter br = new BufferedWriter(fr);
 
             //Writes the header
-            br.write(header + "\n");
-            br.write("--------------------" + "\n" + "                    ");
+            br.write(header);
+            br.newLine();
+            br.write("--------------------");
+            br.newLine();
+            br.write("                    ");
 
             //Writes the columns
             for(int c = 0; c < columns; c++)
@@ -216,7 +262,8 @@ public class Main extends Application
             //Writes the names (or rows)
             for(int n = 0; n < rows; n++)
             {
-                br.write("\n" + sorted.get(n));
+                br.newLine();
+                br.write(sorted.get(n));
             }
 
             //Closes the streams
@@ -228,10 +275,12 @@ public class Main extends Application
             e.printStackTrace();
         }
     }
+
     public void createGrid()
     {
 
     }
+
     public static void main(String[] args)
     {
         launch(args);
