@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.print.PrintResolution;
 import javafx.print.Printer;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -14,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.print.PrinterJob;
@@ -34,10 +36,11 @@ public class Main extends Application
     private ArrayList<String> col = new ArrayList<String>(); //list of all the columns
     private ArrayList<String> sorted = new ArrayList<String>(); //list of names sorted
     private BorderPane bp;
-    private String header;// the header
+    private ArrayList<String> header = new ArrayList<String>();// the header
     private int columns = 0;
     int rows = 0;
     private GridPane gb1;
+    private Printer printer;
     @Override
     public void start(Stage primaryStage) throws Exception
     {
@@ -64,7 +67,7 @@ public class Main extends Application
             buttC.setText("File Chosen");
         });
         buttN.setOnAction((ActionEvent e) -> {
-            readNames();
+            reorganize();
             buttN.setText("File Chosen");
         });
         Button buttG = new Button("Create Grid");
@@ -81,6 +84,12 @@ public class Main extends Application
              print(gb1);
 
         });
+        Button buttS = new Button("Save Grid");
+        buttS.setOnAction((ActionEvent e) -> {
+            if(!(gb1==null))
+                saveFile();
+        });
+        hbox.getChildren().add(buttS);
         Bp.setRight(hBox);
         Bp.setTop(new Text("Schedule Maker"));
         stg.setScene(new Scene(Bp,200,200));
@@ -112,16 +121,34 @@ public class Main extends Application
 
         return null;
     }
-    public void print(Node x)
+    public void print(GridPane x)
     {
 
-        Printer y = Printer.getDefaultPrinter();
-        Boolean test = false;
-        while(test)
-            choosePrinter(y,test);
-        PrinterJob job = PrinterJob.createPrinterJob(y);
+        StackPane p = new StackPane();
+        //p.getChildren().add(x);
+        printer = Printer.getDefaultPrinter();
+
+        choosePrinter(printer);
+        PrinterJob job = PrinterJob.createPrinterJob(printer);
+        //job.showPrintDialog(new Stage());
         boolean success1 = job.showPageSetupDialog(new Stage());
         if(success1) {
+            double width = x.getWidth();
+            double height = x.getHeight();
+
+// Convert to inches
+            PrintResolution resolution = job.getJobSettings().getPrintResolution();
+            width /= resolution.getFeedResolution();
+            height /= resolution.getCrossFeedResolution();
+
+            //double scaleX = job.getJobSettings().getPageLayout().getPrintableWidth() / 72 / width;
+            //double scaleY = job.getJobSettings().getPageLayout().getPrintableHeight() / 72 / height;
+            double scaleX
+                    = job.getJobSettings().getPageLayout().getPrintableWidth() / x.getBoundsInParent().getWidth();
+            double scaleY
+                    = job.getJobSettings().getPageLayout().getPrintableHeight() / x.getBoundsInParent().getHeight();
+            Scale scale = new Scale(scaleX, scaleY);
+            x.getTransforms().add(scale);
             if (job != null) {
                 boolean success = job.printPage(x);
                 if (success) {
@@ -131,7 +158,7 @@ public class Main extends Application
         }
 
     }
-    public void choosePrinter(Printer print,boolean y)
+    public void choosePrinter(Printer print)
     {
         ChoiceBox<Printer> t = new ChoiceBox();
 
@@ -151,41 +178,48 @@ public class Main extends Application
         printer.show();
         root.getChildren().add(butt);
         butt.setOnAction((ActionEvent e) -> {
+            setPrinter(t.getValue());
             printer.close();
 
         });
-        if(butt.isPressed()) {
-            print = t.getValue();
-            y = true;
-        }
+
 
     }
     public void readNames()//modify to use explorer(also read the organize method just in case)
     {
         String[] lines;
+        String[] lines1;
         ArrayList<String> temp = new ArrayList<String>();
+        String line2;
 
         System.out.println("Choose the file that contains the row list you want."); //have gui display this
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileChooser())))
+        try (Scanner s = new Scanner(new File(fileChooser()));)
         {
 
             String line;
-            while ((line = reader.readLine()) != null)
+            while (s.hasNextLine())
             {
-                lines = line.split(" ");
+                System.out.println(s);
+                line = s.next();
+                line2 = s.next();
 
-                for(int i = 0;i<lines.length;i++)
-                {
-                    temp.add(lines[i]);
-                }
+                //for(int i = 0;i<lines.length;i++)
+                //{
+                //    temp.add(lines[i]);
+                //}
 
-                if(temp.size()>0 && (temp.get(0)!=null && temp.get(1)!=null))
-                {
-                    names.add(lines[1] + " " + lines[0]);
-                }
+                //if(temp.size()>0 && (temp.get(0)!=null && temp.get(1)!=null))
+                //{
+                    //if(lines.length==3)
+                        names.add(line+ " "+ line2);
+                    //else
+                    //    names.add(lines[0]+ " "+ lines1[0]);
+                //}
                 //System.out.println(line);
                 rows++;
+                temp = new ArrayList<String>();
+                s.nextLine();
             }
 
         }
@@ -195,7 +229,10 @@ public class Main extends Application
             e.printStackTrace();
         }
     }
-
+    public void setPrinter(Printer x)
+    {
+        printer = x;
+    }
     public void readColumns()//modify to use explorer
     {
         String[] lines;
@@ -245,7 +282,7 @@ public class Main extends Application
                 if (line != null && !line.equals(""))
                 {
                     //Set the header as that line and break
-                    header = line;
+                    header.add(line);
                     System.out.println(header);
 
                     break;
@@ -256,7 +293,7 @@ public class Main extends Application
             //Backup if the file is empty
             if(line == null)
             {
-                header = "Header";
+                header.add("Header");
             }
 
         }
@@ -300,8 +337,11 @@ public class Main extends Application
             BufferedWriter br = new BufferedWriter(fr);
 
             //Writes the header
-            br.write(header);
-            br.newLine();
+            for(int h = 0; h < header.size(); h++)
+                           {
+                                        br.write(header.get(h));
+                            br.newLine();
+                        }
             br.write("--------------------");
             br.newLine();
             br.write("                    ");
@@ -338,9 +378,12 @@ public class Main extends Application
         GridPane gb = new GridPane();
 
         gb.setStyle("-fx-background-color: #FFFFFF");
+        //int mC = header;
+        ColumnConstraints column = new ColumnConstraints();
 
         for (int i = 0; i < nam.size(); i++) {
-            ColumnConstraints column = new ColumnConstraints(50);
+
+
             gb.getColumnConstraints().add(column);
             System.out.println(gb.getWidth());
             System.out.println(gb.getHeight());
@@ -348,21 +391,20 @@ public class Main extends Application
 
         gb.setPrefSize(100,100);
 
-        sp.getChildren().add(gb);
-        sp.setMaxSize(gb.getWidth(),gb.getHeight());
+
 
 
         //gb.add(new Text("test"),0,0);
 
         gb.add(new Pane(),0,1);
-        RowConstraints row = new RowConstraints(25);
+        RowConstraints row = new RowConstraints();
         gb.getRowConstraints().add(row);
         gb.getRowConstraints().add(row);
-        for(int x = 0;x<nam.size();x++)
+        for(int x = 0;x<col.size();x++)
         {
             gb.getRowConstraints().add(row);
             Pane pan = new Pane();
-            Button but = new Button(nam.get(x));
+            Button but = new Button(col.get(x));
 
             pan.getChildren().add(but);
             pan.resize(50,100);
@@ -377,26 +419,30 @@ public class Main extends Application
             pan.resize(50,100);
             //but.setStyle("-fx-background-color: #000000");
             pan.setStyle("-fx-background-color: #FFFFFF");
+            String tem = "";
+            for(int x = 0;x<header.size();x++)
+                tem += header.get(x);
             if(i==0)
-                pan.getChildren().add(new Button(header));
+                pan.getChildren().add(new Button(tem));
             gb.add(pan,i,0);
         }
 
-        for(int x =0;x<col.size();x++)
+        for(int x =0;x<nam.size();x++)
         {
             Pane pan = new Pane();
             pan.resize(50,100);
             //but.setStyle("-fx-background-color: #000000");
             pan.setStyle("-fx-background-color: #FFFFFF");
-            Button but = new Button(col.get(x));
+            Button but = new Button(nam.get(x));
             pan.getChildren().add(but);
-
+            but.getHeight();
 
 
             gb.add(pan,0,x+2);
-            for(int z = 1;z<col.size()+2;z++)
+            for(int z = 1;z<nam.size()+2;z++)
             {
                 gb.add(new Pane(),z,x+2);
+
             }
         }
         gb.setPadding(new Insets(1));
@@ -409,9 +455,14 @@ public class Main extends Application
         gb.setVgap(1);
         gb.setHgap(1);
 
-        gb.setMaxHeight(gb.getRowConstraints().size()*25);
-        gb.setMaxWidth(gb.getColumnConstraints().size()*50+50);
-        grid.setScene(new Scene(sp, gb.getColumnConstraints().size()*50+50, gb.getRowConstraints().size()*25));
+
+
+        gb.setMaxHeight(gb.getBoundsInParent().getHeight());
+        gb.setMaxWidth(gb.getBoundsInParent().getWidth());
+        gb.getBoundsInParent().getWidth();
+        sp.getChildren().add(gb);
+        sp.setMaxSize(gb.getWidth(),gb.getHeight());
+        grid.setScene(new Scene(sp, gb.getMaxWidth(), gb.getHeight()));
 
         grid.show();
         gb1 = gb;
